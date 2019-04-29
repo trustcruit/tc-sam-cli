@@ -1,0 +1,121 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  tc-integrations
+
+  Sample SAM Template for tc-integrations
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+# More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md
+Globals:
+  Function:
+    Timeout: 3
+
+
+Resources:
+
+  ResultBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - Id: RemoveAfter30Days
+            ExpirationInDays: 30
+            Status: Enabled
+
+{% for key, data in config.items() %}
+  {{ key }}:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: {{ data.get("CodeUri") }}
+      Handler: {{ data.get("Handler") }}
+      Runtime: {{ data.get("Runtime") }}
+      MemorySize: {{ data.get("MemorySize") }}
+      Timeout: {{ data.get("Timeout") }}
+      # ReservedConcurrentExecutions: 1
+      Role: !GetAtt LambdaRole.Arn
+      Environment:
+        Variables:
+          TC_THIS_QUEUE: !Ref {{ key }}Sqs
+          TC_THIS_BUCKET: !Ref ResultBucket
+{% for item in config %}
+          TC_{{ item.upper() }}_QUEUE: !Ref {{ item }}Sqs
+          TC_{{ item.upper() }}_BUCKET: !Ref ResultBucket
+{% endfor %}
+      #Events:
+        #CheckWebsiteScheduledEvent:
+          #Type: Schedule
+          #Properties:
+            #Schedule: rate(1 minute)
+            #Input: '{"function": "ping"}'
+  {{ key }}Sqs:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 60
+  {{ key }}SqsMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: 1
+      Enabled: true
+      EventSourceArn: !GetAtt {{ key }}Sqs.Arn
+      FunctionName: !GetAtt {{ key }}.Arn
+{% endfor %}
+
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: allowLambdaLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                  - sqs:ChangeMessageVisibility
+                Resource:
+{% for item in config %}
+                - !GetAtt {{ item }}Sqs.Arn
+{% endfor %}
+              - Effect: Allow
+                Action:
+                  - s3:*
+                Resource:
+                  - !GetAtt ResultBucket.Arn
+                  - !Join
+                    - "/"
+                    -
+                      - !GetAtt ResultBucket.Arn
+                      - "*"
+
+Outputs:
+
+{% for item in config %}
+  {{ item }}Queue:
+    Description: "SQS Url"
+    Value: !Ref {{ item }}Sqs
+{% endfor %}
+
+  ResultBucket:
+    Description: "S3 bucket"
+    Value: !Ref ResultBucket
+
+  Region:
+    Description: "AWS region"
+    Value: !Ref AWS::Region
