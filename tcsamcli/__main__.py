@@ -9,6 +9,7 @@ import sh
 import tclambda.auto_functions
 import toml
 from jinja2 import Environment, PackageLoader
+from tclambda.function import LambdaFunction
 
 cloudformation = boto3.client("cloudformation")
 
@@ -93,6 +94,36 @@ def env_export():
             key = key[: -len("Queue")].upper()
             click.echo(f'TC_{key}_QUEUE="{value}"')
             click.echo(f'TC_{key}_BUCKET="{result_bucket}"')
+
+
+@cli.command()
+def ping():
+    with open("tc-sam.toml") as f:
+        config = toml.load(f)
+
+    stack_name = config["Default"]["StackName"]
+    response = cloudformation.describe_stacks(StackName=stack_name)
+    stack = response["Stacks"][0]
+    outputs = dict(map(itemgetter("OutputKey", "OutputValue"), stack["Outputs"]))
+    result_bucket = outputs["ResultBucket"]
+    pings = []
+    for key, value in outputs.items():
+        if key.endswith("Queue"):
+            key = key[: -len("Queue")].upper()
+            lf = LambdaFunction(value, result_bucket)
+            result = lf.ping()
+            pings.append((key, result))
+            click.secho(f"Ping {key}")
+    for key, ping in pings:
+        try:
+            if ping.result(delay=0.5) == "pong":
+                click.secho(f"Pong {key}", fg="green")
+            else:
+                click.secho(f"No pong {key}: {ping.result()}")
+        except TimeoutError as e:
+            click.secho(f"Timeout {key}: {e}")
+        except Exception as e:
+            click.secho(f"Error {key}: {e}")
 
 
 if __name__ == "__main__":
