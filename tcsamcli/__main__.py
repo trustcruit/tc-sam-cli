@@ -3,11 +3,12 @@ import json
 import sys
 from operator import itemgetter
 
-import boto3
 import click
+import toml
+
+import boto3
 import sh
 import tclambda.auto_functions
-import toml
 from jinja2 import Environment, PackageLoader
 from tclambda.function import LambdaFunction
 
