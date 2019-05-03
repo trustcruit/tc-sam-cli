@@ -51,7 +51,7 @@ Resources:
   {{ key }}Sqs:
     Type: AWS::SQS::Queue
     Properties:
-      VisibilityTimeout: 60
+      VisibilityTimeout: {{ data.get("Timeout") }}
   {{ key }}SqsMapping:
     Type: AWS::Lambda::EventSourceMapping
     Properties:
