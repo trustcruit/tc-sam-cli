@@ -36,6 +36,11 @@ Resources:
       Role: !GetAtt LambdaRole.Arn
       Environment:
         Variables:
+{% if data.get("Environment") %}
+{% for env_key, env_value in data["Environment"].items() %}
+          {{ env_key }}: {{ env_value }}
+{% endfor %}
+{% endif %}
           TC_THIS_QUEUE: !Ref {{ key }}Sqs
           TC_THIS_BUCKET: !Ref ResultBucket
 {% for item in config %}

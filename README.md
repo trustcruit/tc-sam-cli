@@ -20,6 +20,9 @@ Runtime = "python3.7"
 MemorySize = 256
 Timeout = 60
 
+[Functions.MyLambda.Environment]
+MY_KEY = "my value"
+
 # Scheduled events aren't integrated yet.
 [Functions.TcLambda.Events.CheckWebsite]
 Schedule = "rate(1 minute)"
