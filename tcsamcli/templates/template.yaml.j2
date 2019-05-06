@@ -34,6 +34,11 @@ Resources:
       Timeout: {{ data.get("Timeout") }}
       # ReservedConcurrentExecutions: 1
       Role: !GetAtt LambdaRole.Arn
+{% if data.get("Tracing") %}
+      Tracing: Active
+{% else %}
+      Tracing: PassThrough
+{% endif %}
       Environment:
         Variables:
 {% if data.get("Environment") %}
@@ -87,6 +92,11 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
+              - Effect: "Allow"
+                Action:
+                  - "xray:PutTraceSegments"
+                  - "xray:PutTelemetryRecords"
+                Resource: "*"
               - Effect: Allow
                 Action:
                   - logs:*

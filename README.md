@@ -33,6 +33,7 @@ Handler = "app.handler"
 Runtime = "python3.7"
 MemorySize = 256
 Timeout = 60
+Tracing = true
 ```
 
 ### Generate AWS SAM template
