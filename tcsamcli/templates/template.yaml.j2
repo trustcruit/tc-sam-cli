@@ -47,12 +47,16 @@ Resources:
           TC_{{ item.upper() }}_QUEUE: !Ref {{ item }}Sqs
           TC_{{ item.upper() }}_BUCKET: !Ref ResultBucket
 {% endfor %}
-      #Events:
-        #CheckWebsiteScheduledEvent:
-          #Type: Schedule
-          #Properties:
-            #Schedule: rate(1 minute)
-            #Input: '{"function": "ping"}'
+{% if data.get("Events") %}
+      Events:
+{% for event_name, event_data in data["Events"].items() %}
+        {{ event_name }}:
+          Type: Schedule
+          Properties:
+            Schedule: {{ event_data.get("Schedule") }}
+            Input: '{"function": "{{ event_data.get("Function") }}"}'
+{% endfor %}
+{% endif %}
   {{ key }}Sqs:
     Type: AWS::SQS::Queue
     Properties:

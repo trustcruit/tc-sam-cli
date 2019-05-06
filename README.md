@@ -23,8 +23,7 @@ Timeout = 60
 [Functions.MyLambda.Environment]
 MY_KEY = "my value"
 
-# Scheduled events aren't integrated yet.
-[Functions.TcLambda.Events.CheckWebsite]
+[Functions.TcLambda.Events.Ping]
 Schedule = "rate(1 minute)"
 Function = "ping"
 
