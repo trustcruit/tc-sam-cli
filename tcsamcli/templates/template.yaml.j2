@@ -32,7 +32,9 @@ Resources:
       Runtime: {{ data.get("Runtime") }}
       MemorySize: {{ data.get("MemorySize") }}
       Timeout: {{ data.get("Timeout") }}
-      # ReservedConcurrentExecutions: 1
+{% if data.get("ReservedConcurrentExecutions") is not none %}
+      ReservedConcurrentExecutions: {{ data["ReservedConcurrentExecutions"] }}
+{% endif %}
       Role: !GetAtt LambdaRole.Arn
 {% if data.get("Tracing") %}
       Tracing: Active
