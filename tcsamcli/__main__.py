@@ -31,7 +31,11 @@ def generate_template(output):
         loader=loader, autoescape=False, keep_trailing_newline=True, trim_blocks=True
     )
     template = env.get_template("template.yaml.j2")
-    output.write(template.render(config=config["Functions"]))
+    output.write(
+        template.render(
+            config=config["Functions"], extra_policies=config.get("ExtraPolicies", [])
+        )
+    )
 
 
 @cli.command()

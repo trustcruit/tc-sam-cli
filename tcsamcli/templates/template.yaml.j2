@@ -94,6 +94,14 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
+{% for extra_policy in extra_policies %}
+              - Effect: {{ extra_policy["Effect"] }}
+                Action:
+{% for action in extra_policy["Action"] %}
+                  - {{ action }}
+{% endfor %}
+                Resource: {{ extra_policy["Resource"] }}
+{% endfor %}
               - Effect: Allow
                 Action:
                   - cloudwatch:PutMetricData

@@ -13,6 +13,11 @@ Works together with [tclambda](https://pypi.org/project/tclambda/)
 StackName = "tc-sam-playground"
 S3CodeBucket = "tc-sam-bucket"
 
+[[ExtraPolicies]]
+Effect = "Allow"
+Action = ["dynamodb:*"]
+Resource = "arn:aws:dynamodb:eu-west-1:1234:table/myTable"
+
 [Functions.MyLambda]
 CodeUri = "mylambda/"
 Handler = "app.handler"
