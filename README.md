@@ -25,6 +25,7 @@ Runtime = "python3.7"
 MemorySize = 256
 Timeout = 60
 ReservedConcurrentExecutions = 1
+BatchSize = 10
 
 [Functions.MyLambda.Environment]
 MY_KEY = "my value"

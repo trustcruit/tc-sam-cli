@@ -71,7 +71,7 @@ Resources:
   {{ key }}SqsMapping:
     Type: AWS::Lambda::EventSourceMapping
     Properties:
-      BatchSize: 1
+      BatchSize: {{ data.get("BatchSize", 1) }}
       Enabled: true
       EventSourceArn: !GetAtt {{ key }}Sqs.Arn
       FunctionName: !GetAtt {{ key }}.Arn
