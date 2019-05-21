@@ -7,15 +7,27 @@ import click
 import toml
 
 import boto3
+import samcli
 import sh
+import tclambda
 import tclambda.auto_functions
 from jinja2 import Environment, PackageLoader
 from tclambda.function import LambdaFunction
 
+from . import __version__
+
 cloudformation = boto3.client("cloudformation")
+version_message = "\n".join(
+    [
+        f"tcsamcli, version {__version__}",
+        f"tclambda, version {tclambda.__version__}",
+        f"aws-sam-cli, version {samcli.__version__}",
+    ]
+)
 
 
 @click.group()
+@click.version_option(message=version_message)
 def cli():
     pass
 
