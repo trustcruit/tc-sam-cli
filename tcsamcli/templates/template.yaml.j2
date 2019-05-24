@@ -10,6 +10,12 @@ Description: >
 Globals:
   Function:
     Timeout: 3
+    Environment:
+      Variables:
+{% for item in config %}
+        TC_{{ item.upper() }}_QUEUE: !Ref {{ item }}Sqs
+        TC_{{ item.upper() }}_BUCKET: !Ref ResultBucket
+{% endfor %}
 
 
 Resources:
@@ -50,10 +56,6 @@ Resources:
 {% endif %}
           TC_THIS_QUEUE: !Ref {{ key }}Sqs
           TC_THIS_BUCKET: !Ref ResultBucket
-{% for item in config %}
-          TC_{{ item.upper() }}_QUEUE: !Ref {{ item }}Sqs
-          TC_{{ item.upper() }}_BUCKET: !Ref ResultBucket
-{% endfor %}
 {% if data.get("Events") %}
       Events:
 {% for event_name, event_data in data["Events"].items() %}
