@@ -93,7 +93,9 @@ def invoke(module, input_file, function_name, args, kwargs, delay):
         args = data.get("args", [])
         kwargs = data.get("kwargs", {})
     result = getattr(lf, function_name)(*args, **kwargs)
-    click.echo(result.result(delay=delay))
+    click.echo_via_pager(
+        json.dumps(result.result(delay=delay), indent=2, sort_keys=True)
+    )
 
 
 @cli.command()
