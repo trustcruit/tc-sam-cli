@@ -2,6 +2,8 @@
 import json
 import sys
 from operator import itemgetter
+from pathlib import Path
+from uuid import uuid4
 
 import click
 import toml
@@ -12,7 +14,7 @@ import sh
 import tclambda
 import tclambda.auto_functions
 from jinja2 import Environment, PackageLoader
-from tclambda.function import LambdaFunction
+from tclambda.function import LambdaFunction, LambdaResult
 
 from . import __version__
 
@@ -139,6 +141,49 @@ def env_export(env_vars):
     else:
         for key, value in environmental_dict.items():
             click.echo(f'{key}="{value}"')
+
+
+@cli.command()
+@click.option(
+    "--no-build", is_flag=True, default=False, help="Skip building the packages."
+)
+def local_ping(**kwargs):
+    env_vars = Path("env-vars.json")
+    if not env_vars.exists():
+        click.echo(
+            "Missing file 'env-vars.json'."
+            " Run `tc-sam env_export --env_vars > env-vars.json`"
+            " and run this command again"
+        )
+        return
+    if not kwargs.get("no_build"):
+        sh.sam.build(_fg=True)
+
+    with open("tc-sam.toml") as f:
+        config = toml.load(f)
+    results = []
+    for function in config["Functions"].keys():
+        result_bucket = json.loads(env_vars.read_text())[function]["TC_THIS_BUCKET"]
+        function_input = {
+            "function": "ping",
+            "result_store": f"results/ping/{uuid4()}.json",
+        }
+        sh.sam.local.invoke(
+            function,
+            env_vars="env-vars.json",
+            _in=json.dumps(function_input),
+            _out=sys.stdout,
+            _err=sys.stderr,
+        )
+
+        result = LambdaResult(
+            s3_bucket=result_bucket, key=function_input["result_store"]
+        ).result(delay=0, max_attempts=1)
+        results.append(f"{function}={result}")
+
+    click.echo("# RESULTS")
+    for result in results:
+        click.echo(result)
 
 
 @cli.command()
