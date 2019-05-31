@@ -7,8 +7,20 @@ module = "tcsamcli"
 dist-name = "tc-sam-cli"
 author = "Niels Lemmens"
 author-email = "draso.odin@gmail.com"
-classifiers = ["License :: OSI Approved :: MIT License"]
-requires = ["jinja2", "aws-sam-cli==0.16.1", "click~=6.7", "sh", "toml", "tclambda"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.7",
+  "Topic :: Software Development :: Build Tools",
+]
+requires = [
+  "jinja2",
+  "aws-sam-cli==0.16.1",
+  "click~=6.7",
+  "sh",
+  "toml",
+  "tclambda",
+]
 requires-python = ">=3.7"
 description-file = "README.md"
 
