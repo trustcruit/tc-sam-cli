@@ -98,8 +98,7 @@ def invoke(module, input_file, function_name, args, kwargs, delay):
     )
 
 
-@cli.command()
-def env_export():
+def environmental_variables():
     with open("tc-sam.toml") as f:
         config = toml.load(f)
 
@@ -111,8 +110,35 @@ def env_export():
     for key, value in outputs.items():
         if key.endswith("Queue"):
             key = key[: -len("Queue")].upper()
-            click.echo(f'TC_{key}_QUEUE="{value}"')
-            click.echo(f'TC_{key}_BUCKET="{result_bucket}"')
+            yield key, value, result_bucket
+
+
+@cli.command()
+@click.option("--env-vars", is_flag=True)
+def env_export(env_vars):
+    environmental_dict = {}
+    for key, queue, result_bucket in environmental_variables():
+        environmental_dict[f"TC_{key}_QUEUE"] = f"{queue}"
+        environmental_dict[f"TC_{key}_BUCKET"] = f"{result_bucket}"
+
+    if env_vars:
+        with open("tc-sam.toml") as f:
+            config = toml.load(f)
+        obj = {}
+        for function in config["Functions"].keys():
+            obj[function] = {}
+            obj[function].update(environmental_dict)
+            obj[function]["TC_THIS_QUEUE"] = environmental_dict[
+                f"TC_{function.upper()}_QUEUE"
+            ]
+            obj[function]["TC_THIS_BUCKET"] = environmental_dict[
+                f"TC_{function.upper()}_BUCKET"
+            ]
+
+        click.echo(json.dumps(obj, indent=2, sort_keys=True))
+    else:
+        for key, value in environmental_dict.items():
+            click.echo(f'{key}="{value}"')
 
 
 @cli.command()
