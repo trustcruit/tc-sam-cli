@@ -15,7 +15,7 @@ classifiers = [
 ]
 requires = [
   "jinja2",
-  "aws-sam-cli==0.16.1",
+  "aws-sam-cli==0.17.0",
   "click~=6.7",
   "sh",
   "toml",
