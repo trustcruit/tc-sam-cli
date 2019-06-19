@@ -14,7 +14,6 @@ classifiers = [
   "Topic :: Software Development :: Build Tools",
 ]
 requires = [
-  "jinja2",
   "aws-sam-cli==0.17.0",
   "click~=6.7",
   "sh",

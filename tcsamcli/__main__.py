@@ -11,10 +11,9 @@ import samcli
 import sh
 import tclambda
 import tclambda.auto_functions
-from jinja2 import Environment, PackageLoader
 from tclambda.function import LambdaFunction
 
-from . import __version__
+from . import __version__, template_builder
 
 cloudformation = boto3.client("cloudformation")
 version_message = "\n".join(
@@ -38,16 +37,7 @@ def generate_template(output):
     with open("tc-sam.toml") as f:
         config = toml.load(f)
 
-    loader = PackageLoader("tcsamcli", "templates")
-    env = Environment(
-        loader=loader, autoescape=False, keep_trailing_newline=True, trim_blocks=True
-    )
-    template = env.get_template("template.yaml.j2")
-    output.write(
-        template.render(
-            config=config["Functions"], extra_policies=config.get("ExtraPolicies", [])
-        )
-    )
+    template_builder.build_template(config, stream=output)
 
 
 @cli.command()
@@ -64,7 +54,7 @@ def deploy(**kwargs):
 
     try:
         if not kwargs.get("no_build"):
-            sh.sam.build(_fg=True)
+            sh.sam.build(_fg=True, template="template.json")
         sh.sam.package(
             s3_bucket=s3_bucket, output_template_file=template_file, _fg=True
         )
