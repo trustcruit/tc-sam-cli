@@ -20,6 +20,7 @@ requires = [
   "toml",
   "tclambda",
 ]
+home-page = "https://github.com/trustcruit/tc-sam-cli/"
 requires-python = ">=3.7"
 description-file = "README.md"
 
