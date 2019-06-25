@@ -30,10 +30,18 @@ def generate_environmental_variables(config, **defaults):
 
 def generate_outputs(config):
     functions = config["Functions"]
-    return {
-        f"{function}Queue": {"Description": "SQSUrl", "Value": f"{function}Sqs"}
+    outputs = {
+        f"{function}Queue": {
+            "Description": "SQSUrl",
+            "Value": {"Ref": f"{function}Sqs"},
+        }
         for function in functions
     }
+    outputs["ResultBucket"] = {
+        "Description": "The result bucket",
+        "Value": {"Ref": "ResultBucket"},
+    }
+    return outputs
 
 
 def generate_resources(config):
