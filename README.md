@@ -34,6 +34,12 @@ MY_KEY = "my value"
 Schedule = "rate(1 minute)"
 Function = "ping"
 
+# More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+[Functions.TcLambda.Api.Webhook]
+Path = "/hello"
+Method = "post"
+
+
 [Functions.Numpy]
 CodeUri = "numpy/"
 Handler = "app.handler"

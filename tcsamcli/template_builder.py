@@ -163,13 +163,23 @@ def generate_function_properties(function, function_data):
             "ReservedConcurrentExecutions"
         )
     if function_data.get("Events"):
-        properties["Events"] = {}
+        properties.setdefault("Events", {})
         for event_name, event_data in function_data["Events"].items():
             properties["Events"][event_name] = {
                 "Type": "Schedule",
                 "Properties": {
                     "Schedule": event_data.get("Schedule"),
                     "Input": json.dumps({"function": event_data.get("Function")}),
+                },
+            }
+    if function_data.get("Api"):
+        properties.setdefault("Events", {})
+        for event_name, event_data in function_data["Api"].items():
+            properties["Events"][event_name] = {
+                "Type": "Api",
+                "Properties": {
+                    "Path": event_data.get("Path"),
+                    "Method": event_data.get("Method"),
                 },
             }
     return properties
