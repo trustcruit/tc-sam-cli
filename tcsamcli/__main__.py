@@ -18,7 +18,7 @@ from . import __version__, template_builder
 cloudformation = boto3.client("cloudformation")
 version_message = "\n".join(
     [
-        f"tcsamcli, version {__version__}",
+        f"tc-sam-cli, version {__version__}",
         f"tclambda, version {tclambda.__version__}",
         f"aws-sam-cli, version {samcli.__version__}",
     ]
