@@ -41,6 +41,12 @@ def generate_outputs(config):
         "Description": "The result bucket",
         "Value": {"Ref": "ResultBucket"},
     }
+    outputs["ApiGatewayInvokeUrl"] = {
+        "Description": "The api url",
+        "Value": {
+            "Fn::Sub": "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+        },
+    }
     return outputs
 
 
