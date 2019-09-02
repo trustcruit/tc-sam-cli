@@ -1,0 +1,10 @@
+on: push
+name: Test on push
+jobs:
+  styleCheck:
+    name: Style check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Style check
+      uses: bulv1ne/python-style-check@master
