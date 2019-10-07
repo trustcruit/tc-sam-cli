@@ -14,8 +14,8 @@ classifiers = [
   "Topic :: Software Development :: Build Tools",
 ]
 requires = [
-  "aws-sam-cli==0.17.0",
-  "click~=6.7",
+  "aws-sam-cli==0.22.0",
+  "click",
   "sh",
   "toml",
   "tclambda",
