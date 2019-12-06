@@ -168,7 +168,7 @@ def generate_function_properties(function, function_data):
         "Handler": function_data.get("Handler"),
         "MemorySize": function_data.get("MemorySize"),
         "Role": {"Fn::GetAtt": ["LambdaRole", "Arn"]},
-        "Runtime": "python3.7",
+        "Runtime": function_data.get("Runtime"),
         "Timeout": function_data.get("Timeout"),
         "Tracing": "Active" if function_data.get("Tracing") else "PassThrough",
     }
