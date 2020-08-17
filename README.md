@@ -54,10 +54,10 @@ Tracing = true
 After every change in `tc-sam.toml` the template must be regenerated.
 
 ```sh
-$ tc-sam generate_template > template.yml
+$ tc-sam generatetemplate > template.json
 ```
 
-It's recommended to have `template.yml` under source control.
+It's recommended to have `template.json` under source control.
 
 Every Lambda has given access to each other's SQS Queue, and all Lambdas share the same S3 bucket for results. 
 
