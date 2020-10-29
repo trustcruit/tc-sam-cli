@@ -54,7 +54,7 @@ def deploy(**kwargs):
 
     try:
         if not kwargs.get("no_build"):
-            sh.sam.build(_fg=True, template="template.json")
+            sh.sam.build(_fg=True, template="template.json", use_container=True)
         sh.sam.package(
             s3_bucket=s3_bucket, output_template_file=template_file, _fg=True
         )
