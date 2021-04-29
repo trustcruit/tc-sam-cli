@@ -1,0 +1,20 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+    timezone: Europe/Stockholm
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: flake8
+    versions:
+    - 3.8.4
+    - 3.9.0
+  - dependency-name: flit
+    versions:
+    - 3.0.0
+    - 3.1.0
+  - dependency-name: isort
+    versions:
+    - 5.7.0
